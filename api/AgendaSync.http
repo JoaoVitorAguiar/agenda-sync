@@ -1,0 +1,6 @@
+@AgendaSync_HostAddress = http://localhost:5069
+
+GET {{AgendaSync_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
