@@ -14,20 +14,16 @@ export function Login() {
 
         onSuccess: async (codeResponse) => {
             try {
+                const response = await axios.post(
+                    "http://localhost:5069/auth/google",
+                    { code: codeResponse.code }
+                );
 
-                // TODO
-                // console.log("Authorization code:", codeResponse.code);
+                const { accessToken } = response.data;
 
-                // const response = await axios.post(
-                //     "http://localhost:5106/auth/google",
-                //     { code: codeResponse.code }
-                // );
+                localStorage.setItem("accessToken", accessToken);
 
-                // const { accessToken } = response.data;
-
-                // localStorage.setItem("accessToken", accessToken);
-
-                // window.location.href = "/dashboard";
+                window.location.href = "/dashboard";
             } catch (err) {
                 console.error("Erro ao autenticar:", err);
                 alert("Falha ao autenticar com Google");
