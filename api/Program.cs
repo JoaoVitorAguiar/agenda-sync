@@ -1,5 +1,7 @@
+using AgendaSync.Data;
 using AgendaSync.Routes;
 using AgendaSync.Services;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,12 @@ builder.Services.AddSingleton<IJwtProvider>(sp =>
 });
 
 builder.Services.AddScoped<IAuthService, GoogleAuthService>();
+builder.Services.AddDbContext<AgendaSyncDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
+
 
 var app = builder.Build();
 
