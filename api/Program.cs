@@ -29,6 +29,7 @@ builder.Services.AddDbContext<AgendaSyncDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 var app = builder.Build();
