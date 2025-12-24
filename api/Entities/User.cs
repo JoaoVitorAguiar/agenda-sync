@@ -1,6 +1,6 @@
 namespace AgendaSync.Entities;
 
-public class User(string email, string name, string externalSubject, string externalRefreshToken)
+public class User(string email, string name, string externalSubject, string? externalRefreshToken)
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string Email { get; private set; } = email;

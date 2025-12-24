@@ -1,4 +1,3 @@
-
 using AgendaSync.Services;
 
 namespace AgendaSync.Routes;
@@ -10,7 +9,10 @@ public static class AuthRoutes
         var authGroup = app.MapGroup("/auth")
             .WithTags("Authentication");
 
-        authGroup.MapPost("/google", async (GoogleAuthRequest request, IAuthService authService) =>
+        authGroup.MapPost("/google/login", async (
+            GoogleAuthRequest request,
+            IAuthService authService
+        ) =>
         {
             var jwt = await authService.AuthenticateAsync(request.Code);
 
@@ -23,5 +25,3 @@ public static class AuthRoutes
 }
 
 public record GoogleAuthRequest(string Code);
-
-

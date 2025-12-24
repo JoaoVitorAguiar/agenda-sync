@@ -15,7 +15,7 @@ export function Login() {
         onSuccess: async (codeResponse) => {
             try {
                 const response = await axios.post(
-                    "http://localhost:5069/auth/google",
+                    "http://localhost:5069/auth/google/login",
                     { code: codeResponse.code }
                 );
 

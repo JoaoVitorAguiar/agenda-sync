@@ -1,15 +1,16 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AgendaSync.Entities;
 using Google.Apis.Auth;
 
 namespace AgendaSync.Services;
 
-public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvider jwtProvider) : IAuthService
+public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvider jwtProvider, IUserRepository userRepository) : IAuthService
 {
     private readonly IConfiguration _config = config;
     private readonly HttpClient _http = http;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
-
+    private readonly IUserRepository _userRepository = userRepository;
     public async Task<string> AuthenticateAsync(string authorizationCode)
     {
         var tokenResponse = await ExchangeCodeForTokensAsync(authorizationCode);
@@ -22,12 +23,31 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
             }
         );
 
-        var userId = payload.Subject;
+        var subject = payload.Subject;
         var email = payload.Email;
+        var name = payload.Name;
+        var refreshToken = tokenResponse.RefreshToken;
 
-        // TODO: save refresh token in the database 
+        var user = await _userRepository.GetUserByExternalSubjectAsync(subject);
 
-        return _jwtProvider.GenerateToken(userId, email);
+        if (user is null)
+        {
+            user = new User(
+                email: email,
+                name: name,
+                externalSubject: subject,
+                externalRefreshToken: refreshToken
+            );
+
+            await _userRepository.CreateUserAsync(user);
+        }
+        else
+        {
+            user.ExternalRefreshToken = refreshToken;
+            await _userRepository.UpdateUserAsync(user);
+        }
+
+        return _jwtProvider.GenerateToken(user.Id.ToString(), user.Email);
     }
 
     private async Task<GoogleTokenResponse> ExchangeCodeForTokensAsync(string code)
