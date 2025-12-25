@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
-namespace AgendaSync.Api.OpenApi;
+namespace AgendaSync.OpenApi;
 
 internal sealed class BearerSecuritySchemeTransformer : IOpenApiDocumentTransformer
 {
