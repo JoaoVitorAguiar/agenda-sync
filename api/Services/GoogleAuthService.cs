@@ -1,16 +1,25 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using AgendaSync.Dtos;
 using AgendaSync.Entities;
+using AgendaSync.Services.Interfaces;
 using Google.Apis.Auth;
 
 namespace AgendaSync.Services;
 
 public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvider jwtProvider, IUserRepository userRepository) : IAuthService
 {
-    private readonly IConfiguration _config = config;
     private readonly HttpClient _http = http;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly string _clientId =
+            config["Google:ClientId"]
+            ?? throw new InvalidOperationException("Google:ClientId not configured");
+
+    private readonly string _clientSecret =
+        config["Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Google:ClientSecret not configured");
+
     public async Task<string> AuthenticateAsync(string authorizationCode)
     {
         var tokenResponse = await ExchangeCodeForTokensAsync(authorizationCode);
@@ -19,7 +28,7 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
             tokenResponse.IdToken,
             new GoogleJsonWebSignature.ValidationSettings
             {
-                Audience = new[] { _config["Google:ClientId"]! }
+                Audience = [_clientId]
             }
         );
 
@@ -50,12 +59,12 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
         return _jwtProvider.GenerateToken(user.Id.ToString(), user.Email);
     }
 
-    private async Task<GoogleTokenResponse> ExchangeCodeForTokensAsync(string code)
+    public async Task<GoogleTokenResponse> ExchangeCodeForTokensAsync(string code)
     {
         var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            ["client_id"] = _config["Google:ClientId"]!,
-            ["client_secret"] = _config["Google:ClientSecret"]!,
+            ["client_id"] = _clientId,
+            ["client_secret"] = _clientSecret,
             ["code"] = code,
             ["grant_type"] = "authorization_code",
             ["redirect_uri"] = "postmessage",
@@ -74,16 +83,32 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
         return JsonSerializer.Deserialize<GoogleTokenResponse>(body)
                ?? throw new Exception("Invalid token response");
     }
+
+    public async Task<string> GetAccessTokenAsync(string refreshToken)
+    {
+        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["client_id"] = _clientId,
+            ["client_secret"] = _clientSecret,
+            ["refresh_token"] = refreshToken,
+            ["grant_type"] = "refresh_token",
+        });
+
+        var response = await _http.PostAsync(
+            "https://oauth2.googleapis.com/token",
+            content
+        );
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Google refresh error: {body}");
+
+        var json = JsonSerializer.Deserialize<JsonElement>(body);
+
+        return json.GetProperty("access_token").GetString()
+               ?? throw new Exception("Access token not returned");
+    }
+
 }
-
-
-public record GoogleTokenResponse(
-    [property: JsonPropertyName("access_token")] string AccessToken,
-    [property: JsonPropertyName("expires_in")] int ExpiresIn,
-    [property: JsonPropertyName("refresh_token")] string? RefreshToken,
-    [property: JsonPropertyName("scope")] string Scope,
-    [property: JsonPropertyName("token_type")] string TokenType,
-    [property: JsonPropertyName("id_token")] string IdToken
-);
-
 

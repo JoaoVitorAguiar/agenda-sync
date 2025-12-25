@@ -1,4 +1,9 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using AgendaSync.Dtos;
+using AgendaSync.Security;
 using AgendaSync.Services;
+using AgendaSync.Services.Interfaces;
 
 namespace AgendaSync.Routes;
 
@@ -24,4 +29,3 @@ public static class AuthRoutes
     }
 }
 
-public record GoogleAuthRequest(string Code);
