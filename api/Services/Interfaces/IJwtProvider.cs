@@ -1,4 +1,4 @@
-namespace AgendaSync.Services;
+namespace AgendaSync.Services.Interfaces;
 
 public interface IJwtProvider
 {

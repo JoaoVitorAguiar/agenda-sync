@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AgendaSync.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AgendaSync.Services;
