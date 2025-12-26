@@ -1,7 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
-import { loginWithGoogle } from "../services/authService";
-import "./Login.css";
+import { loginWithGoogle } from "../../services/authService";
+import "./styles.css";
 
 export function Login() {
     const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ export function Login() {
         <div className="login-container">
             <h1 className="login-title">AgendaSync</h1>
             <p className="login-subtitle">
-                Conecte sua conta Google para acessar sua agenda 📅
+                Conecte sua conta Google para acessar sua agenda&nbsp;📅
             </p>
 
             <button className="google-btn" onClick={() => login()} disabled={loading}>
