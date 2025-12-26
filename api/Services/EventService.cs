@@ -6,23 +6,19 @@ using AgendaSync.Services.Interfaces;
 
 namespace AgendaSync.Services;
 
-public class EventService(HttpClient http) : IEventService
+public class EventService(IHttpClientFactory httpClientFactory) : IEventService
 {
-    private readonly HttpClient _http = http;
+    private readonly HttpClient _http = httpClientFactory.CreateClient("GoogleCalendar");
 
     public async Task<List<EventDto>> GetNextEventsAsync(string accessToken, int days = 7)
     {
         var now = DateTime.UtcNow;
         var until = now.AddDays(days);
 
-        var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            $"https://www.googleapis.com/calendar/v3/calendars/primary/events" +
-            $"?timeMin={now:o}&timeMax={until:o}&singleEvents=true&orderBy=startTime"
-        );
+        var url = $"primary/events?timeMin={now:o}&timeMax={until:o}&singleEvents=true&orderBy=startTime";
 
-        request.Headers.Authorization =
-            new AuthenticationHeaderValue("Bearer", accessToken);
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _http.SendAsync(request);
 
@@ -73,10 +69,7 @@ public class EventService(HttpClient http) : IEventService
 
     public async Task<EventDetailsDto?> GetEventByIdAsync(string accessToken, string eventId)
     {
-        var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            $"https://www.googleapis.com/calendar/v3/calendars/primary/events/{eventId}"
-        );
+        var request = new HttpRequestMessage(HttpMethod.Get, $"primary/events/{eventId}");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await _http.SendAsync(request);
@@ -164,10 +157,14 @@ public class EventService(HttpClient http) : IEventService
             }
         };
 
-        var request = new HttpRequestMessage(
-            HttpMethod.Post,
-            "https://www.googleapis.com/calendar/v3/calendars/primary/events"
-        );
+        var request = new HttpRequestMessage(HttpMethod.Post, "primary/events")
+        {
+            Headers =
+            {
+                Authorization = new AuthenticationHeaderValue("Bearer", accessToken)
+            },
+            Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+        };
 
         request.Headers.Authorization =
             new AuthenticationHeaderValue("Bearer", accessToken);

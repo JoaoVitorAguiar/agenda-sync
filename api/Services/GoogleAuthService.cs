@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text.Json;
 using AgendaSync.Dtos;
 using AgendaSync.Entities;
@@ -8,9 +7,9 @@ using Google.Apis.Auth;
 
 namespace AgendaSync.Services;
 
-public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvider jwtProvider, IUserRepository userRepository) : IAuthService
+public class GoogleAuthService(IConfiguration config, IHttpClientFactory httpClientFactory, IJwtProvider jwtProvider, IUserRepository userRepository) : IAuthService
 {
-    private readonly HttpClient _http = http;
+    private readonly HttpClient _http = httpClientFactory.CreateClient("GoogleOAuth");
     private readonly IJwtProvider _jwtProvider = jwtProvider;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly string _clientId =
@@ -71,10 +70,8 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
             ["redirect_uri"] = "postmessage",
         });
 
-        var response = await _http.PostAsync(
-            "https://oauth2.googleapis.com/token",
-            content
-        );
+        var response = await _http.PostAsync("", content);
+
 
         var body = await response.Content.ReadAsStringAsync();
 
@@ -87,19 +84,15 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
 
     public async Task<string> GetAccessTokenAsync(string refreshToken)
     {
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        var data = new Dictionary<string, string>
         {
             ["client_id"] = _clientId,
             ["client_secret"] = _clientSecret,
             ["refresh_token"] = refreshToken,
-            ["grant_type"] = "refresh_token",
-        });
+            ["grant_type"] = "refresh_token"
+        };
 
-        var response = await _http.PostAsync(
-            "https://oauth2.googleapis.com/token",
-            content
-        );
-
+        var response = await _http.PostAsync("", new FormUrlEncodedContent(data));
         var body = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)

@@ -12,6 +12,14 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+builder.Services.AddHttpClient("GoogleOAuth", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Google:TokenEndpoint"]!);
+});
+builder.Services.AddHttpClient("GoogleCalendar", client =>
+{
+    client.BaseAddress = new Uri("https://www.googleapis.com/calendar/v3/calendars/");
+});
 
 builder.Services.AddCors(options =>
 {
