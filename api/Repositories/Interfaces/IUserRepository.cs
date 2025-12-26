@@ -1,6 +1,6 @@
 using AgendaSync.Entities;
 
-namespace AgendaSync.Services.Interfaces;
+namespace AgendaSync.Repositories.Interfaces;
 
 public interface IUserRepository
 {

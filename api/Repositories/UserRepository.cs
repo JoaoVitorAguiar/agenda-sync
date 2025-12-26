@@ -1,9 +1,9 @@
 using AgendaSync.Data;
 using AgendaSync.Entities;
-using AgendaSync.Services.Interfaces;
+using AgendaSync.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace AgendaSync.Services;
+namespace AgendaSync.Repositories;
 
 public class UserRepository(AgendaSyncDbContext context) : IUserRepository
 {

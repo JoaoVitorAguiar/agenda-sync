@@ -2,6 +2,7 @@ using System.Text.Json;
 using AgendaSync.Dtos;
 using AgendaSync.Entities;
 using AgendaSync.Exceptions;
+using AgendaSync.Repositories.Interfaces;
 using AgendaSync.Services.Interfaces;
 using Google.Apis.Auth;
 

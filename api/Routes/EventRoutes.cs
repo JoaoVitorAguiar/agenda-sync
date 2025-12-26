@@ -1,4 +1,5 @@
 using AgendaSync.Dtos;
+using AgendaSync.Repositories.Interfaces;
 using AgendaSync.Security;
 using AgendaSync.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
