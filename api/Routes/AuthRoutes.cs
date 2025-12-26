@@ -16,16 +16,32 @@ public static class AuthRoutes
 
         authGroup.MapPost("/google/login", async (
             GoogleAuthRequest request,
-            IAuthService authService
+            IAuthService authService,
+            HttpContext ctx
         ) =>
         {
             var jwt = await authService.AuthenticateAsync(request.Code);
 
-            return Results.Ok(new
-            {
-                accessToken = jwt
-            });
+            ctx.Response.Cookies.Append(
+                "agenda_token",
+                jwt,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = !ctx.Request.Host.Host.Contains("localhost"),
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/",
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                }
+            );
+
+            return Results.Ok(new { message = "Logged in successfully" });
         });
+
+        authGroup.MapGet("/check", () =>
+            Results.NoContent()
+        )
+        .RequireAuthorization();
     }
 }
 

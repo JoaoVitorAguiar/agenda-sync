@@ -18,14 +18,12 @@ public static class JwtServiceCollectionExtensions
         var audience = jwt["Audience"]!;
         var expiry = int.Parse(jwt["ExpiryInMinutes"]!);
 
-        services.AddSingleton<IJwtProvider>(
-            _ => new JwtProvider(secretKey, issuer, audience, expiry)
-        );
+        services.AddSingleton<IJwtProvider>(new JwtProvider(secretKey, issuer, audience, expiry));
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(o =>
+            .AddJwtBearer(options =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidIssuer = issuer,
@@ -35,6 +33,19 @@ public static class JwtServiceCollectionExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (string.IsNullOrWhiteSpace(context.Token)
+                            && context.Request.Cookies.TryGetValue("agenda_token", out var token))
+                        {
+                            context.Token = token;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
