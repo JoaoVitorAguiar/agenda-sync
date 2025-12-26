@@ -1,0 +1,91 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+}
+
+.modal {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    width: min(90%, 420px);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn .25s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.modal-header h2 {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    color: transparent;
+    font-size: 1.3rem;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    color: var(--text-muted);
+}
+
+input,
+textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: .6rem;
+    border-radius: 6px;
+    color: var(--text);
+}
+
+textarea {
+    height: 80px;
+    resize: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: .75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

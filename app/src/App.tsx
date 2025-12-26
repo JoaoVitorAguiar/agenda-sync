@@ -1,7 +1,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
-import { Dashboard } from "./pages/Dashboard";
+import { Dashboard } from "./pages/Dashborad";
 import { checkSession } from "./services/authService";
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
