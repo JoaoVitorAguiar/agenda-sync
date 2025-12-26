@@ -4,18 +4,9 @@ using AgendaSync.Exceptions;
 
 namespace AgendaSync.Middleware;
 
-public class ExceptionHandlingMiddleware : IMiddleware
+public class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger) : IMiddleware
 {
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-    private readonly IHostEnvironment _env;
-
-    public ExceptionHandlingMiddleware(
-        ILogger<ExceptionHandlingMiddleware> logger,
-        IHostEnvironment env)
-    {
-        _logger = logger;
-        _env = env;
-    }
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -44,15 +35,11 @@ public class ExceptionHandlingMiddleware : IMiddleware
         {
             _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
 
-            var detail = _env.IsDevelopment()
-                ? ex.Message
-                : "An unexpected error occurred. Please try again later.";
-
             var problem = new
             {
                 status = (int)HttpStatusCode.InternalServerError,
                 title = "Internal Server Error",
-                detail,
+                detail = "An unexpected error occurred. Please try again later.",
                 traceId = context.TraceIdentifier
             };
 
