@@ -1,8 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using AgendaSync.Dtos;
 using AgendaSync.Security;
-using AgendaSync.Services;
 using AgendaSync.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +18,7 @@ public static class EventRoutes
             [FromServices] IAuthService authService,
             [FromServices] IEventService eventService) =>
         {
-            var userId = user.Id;
-            var userEntity = await userRepository.GetByIdAsync(userId);
+            var userEntity = await userRepository.GetByIdAsync(user.Id);
 
             if (userEntity?.ExternalRefreshToken is null)
                 return Results.BadRequest("No Google refresh token");
@@ -34,7 +30,9 @@ public static class EventRoutes
                 await eventService.GetNextEventsAsync(accessToken, 7);
 
             return Results.Ok(events);
-        }).RequireAuthorization();
+        })
+        .RequireAuthorization()
+        .Produces<List<EventDto>>(StatusCodes.Status200OK);
     }
 }
 

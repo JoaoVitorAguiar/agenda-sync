@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using AgendaSync.Dtos;
 using AgendaSync.Entities;
+using AgendaSync.Exceptions;
 using AgendaSync.Services.Interfaces;
 using Google.Apis.Auth;
 
@@ -100,6 +101,14 @@ public class GoogleAuthService(IConfiguration config, HttpClient http, IJwtProvi
         );
 
         var body = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            if (body.Contains("invalid_grant", StringComparison.OrdinalIgnoreCase))
+                throw new GoogleRefreshTokenExpiredException("Refresh token expired or revoked by Google.");
+
+            throw new Exception($"Google refresh error: {body}");
+        }
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Google refresh error: {body}");
