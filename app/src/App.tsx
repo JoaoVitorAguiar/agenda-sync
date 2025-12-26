@@ -17,7 +17,7 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
   }, []);
 
   if (auth === null) {
-    return <p>🔐 Verificando sessão...</p>;
+    return <p>🔐 Checking session...</p>;
   }
 
   return auth ? children : <Navigate to="/login" replace />;

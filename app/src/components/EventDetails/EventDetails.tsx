@@ -17,7 +17,7 @@ export function EventDetails({ eventId, onClose }: EventDetailsProps) {
                 const data = await getEventById(eventId);
                 setEvent(data);
             } catch (err) {
-                alert("Erro ao carregar detalhes do evento");
+                alert("Error loading event details");
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -36,7 +36,7 @@ export function EventDetails({ eventId, onClose }: EventDetailsProps) {
         return (
             <div className="event-modal-overlay">
                 <div className="event-modal">
-                    <p>⏳ Carregando...</p>
+                    <p>⏳ Loading...</p>
                 </div>
             </div>
         );
@@ -55,15 +55,15 @@ export function EventDetails({ eventId, onClose }: EventDetailsProps) {
 
                 <div className="event-modal-content">
 
-                    <p><strong>🕒 Início:</strong> {formatDate(event.start)}</p>
-                    <p><strong>🏁 Fim:</strong> {formatDate(event.end)}</p>
+                    <p><strong>🕒 Start:</strong> {formatDate(event.start)}</p>
+                    <p><strong>🏁 End:</strong> {formatDate(event.end)}</p>
 
                     {event.location && (
-                        <p><strong>📍 Local:</strong> {event.location}</p>
+                        <p><strong>📍 Location:</strong> {event.location}</p>
                     )}
 
                     {event.description && (
-                        <p><strong>📝 Descrição:</strong> {event.description}</p>
+                        <p><strong>📝 Description:</strong> {event.description}</p>
                     )}
 
                     {event.htmlLink && (
@@ -72,7 +72,7 @@ export function EventDetails({ eventId, onClose }: EventDetailsProps) {
                             href={event.htmlLink}
                             target="_blank"
                         >
-                            Abrir no Google Calendar ↗
+                            Open in Google Calendar ↗
                         </a>
                     )}
 

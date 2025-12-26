@@ -26,16 +26,16 @@ export function CreateEventModal({ onClose, onCreated }: Props) {
                 end,
                 description,
                 location,
-                timeZone: "America/Fortaleza",
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             });
 
-            alert("Evento criado com sucesso!");
+            alert("Event created successfully!");
             onCreated?.();
             onClose();
 
         } catch (err) {
             console.error(err);
-            alert("Erro ao criar evento.");
+            alert("Error creating event.");
         } finally {
             setLoading(false);
         }
@@ -46,22 +46,22 @@ export function CreateEventModal({ onClose, onCreated }: Props) {
             <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
 
                 <header className="modal-header">
-                    <h2>Criar Evento</h2>
+                    <h2>Create Event</h2>
                     <button type="button" className="close-btn" onClick={onClose}>✖</button>
                 </header>
 
                 <label>
-                    Título*
+                    Title*
                     <input
                         required
                         value={summary}
                         onChange={(e) => setSummary(e.target.value)}
-                        placeholder="Ex: Reunião Equipe"
+                        placeholder="e.g. Team Meeting"
                     />
                 </label>
 
                 <label>
-                    Início*
+                    Start*
                     <input
                         type="datetime-local"
                         required
@@ -71,7 +71,7 @@ export function CreateEventModal({ onClose, onCreated }: Props) {
                 </label>
 
                 <label>
-                    Fim*
+                    End*
                     <input
                         type="datetime-local"
                         required
@@ -81,25 +81,25 @@ export function CreateEventModal({ onClose, onCreated }: Props) {
                 </label>
 
                 <label>
-                    Local
+                    Location
                     <input
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Google Meet / Escritório / etc."
+                        placeholder="Google Meet / Office / etc."
                     />
                 </label>
 
                 <label>
-                    Descrição
+                    Description
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Notas, objetivos, participantes..."
+                        placeholder="Notes, objectives, participants..."
                     />
                 </label>
 
                 <button className="btn-primary" disabled={loading}>
-                    {loading ? "Criando..." : "Criar Evento"}
+                    {loading ? "Creating..." : "Create Event"}
                 </button>
 
             </form>

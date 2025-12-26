@@ -20,21 +20,21 @@ export function Login() {
             try {
                 await loginWithGoogle(code);
             } catch (err) {
-                alert("Erro ao autenticar com Google");
+                alert("Error authenticating with Google");
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         },
 
-        onError: () => alert("Login cancelado"),
+        onError: () => alert("Login canceled"),
     });
 
     return (
         <div className="login-container">
             <h1 className="login-title">AgendaSync</h1>
             <p className="login-subtitle">
-                Conecte sua conta Google para acessar sua agenda&nbsp;📅
+                Connect your Google account to access your calendar&nbsp;📅
             </p>
 
             <button className="google-btn" onClick={() => login()} disabled={loading}>
@@ -43,11 +43,11 @@ export function Login() {
                     alt="Google"
                     className="google-icon"
                 />
-                {loading ? "Conectando..." : "Entrar com Google"}
+                {loading ? "Connecting..." : "Sign in with Google"}
             </button>
 
             <span className="login-footer">
-                Autorização segura via OAuth2 / Google Identity
+                Secure authorization via OAuth2 / Google Identity
             </span>
         </div>
     );

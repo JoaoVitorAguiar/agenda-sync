@@ -24,9 +24,8 @@ export function Dashboard() {
             const data = await getEvents();
             setEvents(data);
         } catch (error) {
-            console.error("Erro ao buscar eventos:", error);
-            alert("Sessão expirada. Faça login novamente.");
-            window.location.href = "/login";
+            console.error("Error loading events:", error);
+            alert("Error loading events.");
         } finally {
             setLoading(false);
         }
@@ -34,10 +33,9 @@ export function Dashboard() {
 
     useEffect(() => {
         loadEvents();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (loading) return <p className="loading">Carregando eventos...</p>;
+    if (loading) return <p className="loading">Loading events...</p>;
 
     return (
         <>
@@ -46,15 +44,15 @@ export function Dashboard() {
                     <div className="dashboard-topbar">
                         <h1>
                             <span className="emoji">📅</span>
-                            <span className="title-text">Seus próximos eventos</span>
+                            <span className="title-text">Your upcoming events</span>
                         </h1>
 
                         <button className="btn-create" onClick={() => setOpenCreate(true)}>
-                            ➕ Novo Evento
+                            ➕ New Event
                         </button>
                     </div>
 
-                    {events.length === 0 && <p className="no-events">Nenhum evento encontrado.</p>}
+                    {events.length === 0 && <p className="no-events">No events found.</p>}
 
                     <div className="events-grid">
                         {events.map((event) => (
@@ -67,7 +65,7 @@ export function Dashboard() {
                                 onKeyDown={(e) => e.key === "Enter" && setSelectedId(event.id)}
                                 style={{ cursor: "pointer" }}
                             >
-                                <h2>{event.summary ?? "(Sem título)"}</h2>
+                                <h2>{event.summary ?? "(No title)"}</h2>
                                 <p className="date">🕒 {new Date(event.start).toLocaleString("pt-BR")}</p>
                                 <p className="date">🏁 {new Date(event.end).toLocaleString("pt-BR")}</p>
                             </div>
