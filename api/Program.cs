@@ -24,12 +24,13 @@ builder.Services.AddHttpClient("GoogleCalendar", client =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("webapp", b =>
-        b.WithOrigins("http://localhost:5173")
+        b.WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()!)
          .AllowCredentials()
          .AllowAnyHeader()
          .AllowAnyMethod()
     );
 });
+
 
 var app = builder.Build();
 
