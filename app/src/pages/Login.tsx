@@ -1,10 +1,13 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
+import { useState } from "react";
+import { loginWithGoogle } from "../services/authService";
+import "./Login.css";
 
 export function Login() {
+    const [loading, setLoading] = useState(false);
+
     const login = useGoogleLogin({
         flow: "auth-code",
-
         scope: [
             "openid",
             "profile",
@@ -12,59 +15,40 @@ export function Login() {
             "https://www.googleapis.com/auth/calendar",
         ].join(" "),
 
-        onSuccess: async (codeResponse) => {
+        onSuccess: async ({ code }) => {
+            setLoading(true);
             try {
-                const response = await axios.post(
-                    "http://localhost:5069/auth/google/login",
-                    { code: codeResponse.code }
-                );
-
-                const { accessToken } = response.data;
-
-                localStorage.setItem("accessToken", accessToken);
-
-                window.location.href = "/dashboard";
+                await loginWithGoogle(code);
             } catch (err) {
-                console.error("Erro ao autenticar:", err);
-                alert("Falha ao autenticar com Google");
+                alert("Erro ao autenticar com Google");
+                console.error(err);
+            } finally {
+                setLoading(false);
             }
         },
 
-        onError: () => {
-            alert("Login com Google cancelado");
-        },
+        onError: () => alert("Login cancelado"),
     });
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>AgendaSync</h1>
-            <p style={styles.subtitle}>
-                Conecte sua conta Google para acessar sua agenda
+        <div className="login-container">
+            <h1 className="login-title">AgendaSync</h1>
+            <p className="login-subtitle">
+                Conecte sua conta Google para acessar sua agenda 📅
             </p>
 
-            <button onClick={() => login()}>
-                Conectar Google Calendar
+            <button className="google-btn" onClick={() => login()} disabled={loading}>
+                <img
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    alt="Google"
+                    className="google-icon"
+                />
+                {loading ? "Conectando..." : "Entrar com Google"}
             </button>
+
+            <span className="login-footer">
+                Autorização segura via OAuth2 / Google Identity
+            </span>
         </div>
     );
 }
-
-const styles = {
-    container: {
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column" as const,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "1.5rem",
-    },
-    title: {
-        fontSize: "2.5rem",
-        fontWeight: 700,
-    },
-    subtitle: {
-        color: "#666",
-        maxWidth: 400,
-        textAlign: "center" as const,
-    },
-};

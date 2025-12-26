@@ -1,11 +1,26 @@
+import { useEffect, useState, type JSX } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
-import { isAuthenticated } from "./services/auth";
-import type { JSX } from "react";
+import { checkSession } from "./services/authService";
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  const [auth, setAuth] = useState<null | boolean>(null);
+
+  useEffect(() => {
+    async function validate() {
+      const ok = await checkSession();
+      setAuth(ok);
+    }
+
+    validate();
+  }, []);
+
+  if (auth === null) {
+    return <p>🔐 Verificando sessão...</p>;
+  }
+
+  return auth ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -23,12 +38,7 @@ export default function App() {
           }
         />
 
-        <Route
-          path="*"
-          element={
-            <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} />
-          }
-        />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
