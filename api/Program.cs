@@ -1,6 +1,9 @@
+using AgendaSync.Data;
 using AgendaSync.DependencyInjection;
 using AgendaSync.Middleware;
 using AgendaSync.Routes;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +34,6 @@ builder.Services.AddCors(options =>
     );
 });
 
-
 var app = builder.Build();
 
 app.UseCors("webapp");
@@ -44,5 +46,11 @@ app.UseScalarDocs();
 
 app.MapAuthRoutes();
 app.MapEventRoutes();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AgendaSyncDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
