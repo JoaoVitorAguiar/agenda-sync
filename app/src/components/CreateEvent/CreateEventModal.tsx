@@ -22,8 +22,8 @@ export function CreateEventModal({ onClose, onCreated }: Props) {
         try {
             await createEvent({
                 summary,
-                start,
-                end,
+                start: start + ":00",
+                end: end + ":00",
                 description,
                 location,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,

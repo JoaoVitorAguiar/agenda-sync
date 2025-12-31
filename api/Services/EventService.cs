@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -138,8 +139,13 @@ public class EventService(IHttpClientFactory httpClientFactory) : IEventService
     }
 
 
+
     public async Task<string> CreateEventAsync(string accessToken, EventCreateDto dto)
     {
+
+        var startLocal = DateTime.ParseExact(dto.Start, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+        var endLocal = DateTime.ParseExact(dto.End, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+
         var payload = new
         {
             summary = dto.Summary,
@@ -147,33 +153,21 @@ public class EventService(IHttpClientFactory httpClientFactory) : IEventService
             location = dto.Location,
             start = new
             {
-                dateTime = dto.Start.ToString("yyyy-MM-ddTHH:mm:sszzz"),
+                dateTime = startLocal.ToString("yyyy-MM-ddTHH:mm:ss"),
                 timeZone = dto.TimeZone
             },
             end = new
             {
-                dateTime = dto.End.ToString("yyyy-MM-ddTHH:mm:sszzz"),
+                dateTime = endLocal.ToString("yyyy-MM-ddTHH:mm:ss"),
                 timeZone = dto.TimeZone
             }
         };
 
         var request = new HttpRequestMessage(HttpMethod.Post, "primary/events")
         {
-            Headers =
-            {
-                Authorization = new AuthenticationHeaderValue("Bearer", accessToken)
-            },
+            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", accessToken) },
             Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
         };
-
-        request.Headers.Authorization =
-            new AuthenticationHeaderValue("Bearer", accessToken);
-
-        request.Content = new StringContent(
-            JsonSerializer.Serialize(payload),
-            Encoding.UTF8,
-            "application/json"
-        );
 
         var response = await _http.SendAsync(request);
         var body = await response.Content.ReadAsStringAsync();
@@ -181,8 +175,7 @@ public class EventService(IHttpClientFactory httpClientFactory) : IEventService
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Google API Error: {body}");
 
-        var json = JsonDocument.Parse(body).RootElement;
-
-        return json.GetProperty("id").GetString()!;
+        return JsonDocument.Parse(body).RootElement.GetProperty("id").GetString()!;
     }
+
 }

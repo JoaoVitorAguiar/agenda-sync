@@ -7,13 +7,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <header className="layout-header">
                 <span className="brand">📅 AgendaSync</span>
                 <button className="btn btn-outline logout-btn" onClick={logout}>
-                    Sair
+                    Logout
                 </button>
             </header>
 
             <main>{children}</main>
 
-            <footer>Feito por Vitor Aguiar • 2025</footer>
+            <footer>Made by Vitor Aguiar • 2025</footer>
         </div>
     );
 }
