@@ -13,14 +13,59 @@
 
 ---
 
+## 📸 **User Flow**
+
+> Below is the step-by-step flow of using AgendaSync — from logging in to creating and synchronizing events with Google Calendar.
+
+### 1️⃣ **Google Login**
+
+The user starts by authenticating via OAuth2 with Google.
+![Google Login](docs/screenshots/login.png)
+
+---
+
+### 2️⃣ **Dashboard Overview**
+
+After logging in, the user can view all synchronized events.
+![Dashboard](docs/screenshots/dashboard.png)
+
+---
+
+### 3️⃣ **Google Calendar (Before Creation)**
+
+Before creating a new event, the Google Calendar has no record of it yet.
+![Google Calendar Before](docs/screenshots/agenda-01.png)
+
+---
+
+### 4️⃣ **Create a New Event**
+
+The user fills in the event details and submits it to Google Calendar.
+![Create Event](docs/screenshots/create-event.png)
+
+---
+
+### 5️⃣ **Google Calendar (After Creation)**
+
+The newly created event now appears in Google Calendar as well.
+![Google Calendar After](docs/screenshots/agenda-02.png)
+
+---
+
+### 6️⃣ **Event Details on Dashboard**
+
+Users can also inspect the event details directly within the dashboard.
+![Event Details](docs/screenshots/event-details.png)
+
+
 ## 📌 **Features**
 
 * Google Login via OAuth2 (Auth Code Flow)
-* Create, update and list events from Google Calendar
+* Create and list events from Google Calendar
 * JWT Authentication with .NET
 * Containerized full stack (PostgreSQL + API + Web App)
 * Automatic EF Core migrations on startup
-* `.env` configuration support (no secrets in the repository)
+* `.env` configuration support 
 
 ---
 
